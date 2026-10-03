@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест: Периметр прямоугольника</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+  }
+
+  .card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 24px 32px 24px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    max-width: 680px;
+    width: 100%;
+    animation: appear 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .topbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .topbar-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f3f0ff, #e8e3ff);
+    border: 1px solid rgba(118, 75, 162, 0.15);
+  }
+
+  .topbar-icon {
+    font-size: 18px;
+  }
+
+  .topbar-label {
+    font-size: 12px;
+    color: #8b87a8;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .topbar-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #2d2a4a;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .topbar-value.warning {
+    color: #dc2626;
+    animation: pulseWarn 1s ease-in-out infinite;
+  }
+
+  @keyframes pulseWarn {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: #ece9f7;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    width: 0%;
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .task-panel {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border-radius: 16px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    text-align: center;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+  }
+
+  .task-panel .task-label {
+    font-size: 13px;
+    color: #6b6590;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+  }
+
+  .task-panel .task-value {
+    font-size: 26px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .task-panel .task-value small {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .canvas-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  canvas {
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12),
+                0 0 0 1px rgba(118, 75, 162, 0.1);
+    cursor: crosshair;
+    touch-action: none;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    transition: box-shadow 0.4s;
+  }
+
+  canvas.win {
+    animation: canvasGlow 1.6s ease-out;
+  }
+
+  @keyframes canvasGlow {
+    0%   { box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3), 0 0 0 0 rgba(34, 197, 94, 0.5); }
+    50%  { box-shadow: 0 8px 40px rgba(34, 197, 94, 0.6), 0 0 0 12px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3), 0 0 0 0 rgba(34, 197, 94, 0); }
+  }
+
+  .answer-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #f3f0ff, #e8e3ff);
+    border-radius: 16px;
+    border: 1px solid rgba(118, 75, 162, 0.15);
+    transition: all 0.4s;
+  }
+
+  .answer-row.disabled {
+    opacity: 0.55;
+  }
+
+  .answer-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #4a4570;
+    white-space: nowrap;
+  }
+
+  .answer-input-wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .answer-input {
+    width: 100%;
+    padding: 11px 46px 11px 16px;
+    font-size: 18px;
+    font-weight: 800;
+    font-family: inherit;
+    color: #2d2a4a;
+    background: #ffffff;
+    border: 2px solid #d8d3ec;
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.25s;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+  }
+
+  .answer-input::-webkit-outer-spin-button,
+  .answer-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .answer-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+  }
+
+  .answer-input:disabled {
+    background: #f5f3fb;
+    cursor: not-allowed;
+  }
+
+  .answer-input.correct {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    color: #15803d;
+  }
+
+  .answer-input.wrong {
+    border-color: #ef4444;
+    background: #fef2f2;
+    color: #b91c1c;
+    animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-8px); }
+    30% { transform: translateX(7px); }
+    45% { transform: translateX(-5px); }
+    60% { transform: translateX(4px); }
+    75% { transform: translateX(-2px); }
+  }
+
+  .answer-unit {
+    position: absolute;
+    right: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #8b87a8;
+    pointer-events: none;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  button {
+    flex: 1;
+    padding: 13px 22px;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    letter-spacing: 0.3px;
+  }
+
+  .btn-check {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-check:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(102, 126, 234, 0.5);
+  }
+
+  .btn-check:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+  }
+
+  .btn-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(34, 197, 94, 0.5);
+  }
+
+  .btn-reset {
+    background: #f0eef8;
+    color: #764ba2;
+    flex: 0 0 auto;
+    padding: 13px 20px;
+  }
+
+  .btn-reset:hover {
+    background: #e8e3ff;
+    transform: translateY(-2px);
+  }
+
+  .message {
+    margin-top: 12px;
+    padding: 11px 18px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 0;
+    overflow: hidden;
+  }
+
+  .message.show {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 100px;
+  }
+
+  .message.success {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #15803d;
+    border: 1px solid #86efac;
+  }
+
+  .message.error {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+  }
+
+  .message.info {
+    background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+    color: #3730a3;
+    border: 1px solid #a5b4fc;
+  }
+
+  .win-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    z-index: 10;
+  }
+
+  .win-overlay.show {
+    animation: overlayFade 1.8s ease-out forwards;
+  }
+
+  @keyframes overlayFade {
+    0%   { opacity: 0; }
+    15%  { opacity: 1; }
+    75%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  .win-badge {
+    font-size: 22px;
+    font-weight: 800;
+    color: #16a34a;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 14px 28px;
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(22, 163, 74, 0.4);
+    transform: scale(0.5);
+    animation: badgePop 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes badgePop {
+    0%   { transform: scale(0.5) rotate(-8deg); opacity: 0; }
+    25%  { transform: scale(1.1) rotate(3deg); opacity: 1; }
+    40%  { transform: scale(1) rotate(0deg); opacity: 1; }
+    75%  { transform: scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: scale(0.9) rotate(0deg); opacity: 0; }
+  }
+
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 14px;
+    top: -20px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9;
+  }
+
+  @keyframes confettiFall {
+    0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(600px) rotate(720deg); }
+  }
+
+  .results-screen {
+    display: none;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .results-screen.show {
+    display: block;
+    animation: appear 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .results-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #2d2a4a;
+    margin-bottom: 6px;
+  }
+
+  .results-subtitle {
+    font-size: 14px;
+    color: #8b87a8;
+    margin-bottom: 20px;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .result-box {
+    background: linear-gradient(135deg, #f3f0ff, #e8e3ff);
+    border-radius: 16px;
+    padding: 14px 10px;
+    border: 1px solid rgba(118, 75, 162, 0.15);
+  }
+
+  .result-box .result-icon {
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+
+  .result-box .result-label {
+    font-size: 11px;
+    color: #8b87a8;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .result-box .result-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #2d2a4a;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .name-section {
+    background: linear-gradient(135deg, #f3f0ff, #e8e3ff);
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    border: 1px solid rgba(118, 75, 162, 0.15);
+  }
+
+  .name-section .name-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #4a4570;
+    margin-bottom: 12px;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 13px 18px;
+    font-size: 17px;
+    font-weight: 700;
+    font-family: inherit;
+    color: #2d2a4a;
+    background: #ffffff;
+    border: 2px solid #d8d3ec;
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.25s;
+    text-align: center;
+  }
+
+  .name-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+  }
+
+  .btn-restart {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    padding: 15px 24px;
+    font-size: 16px;
+  }
+
+  .btn-restart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(102, 126, 234, 0.5);
+  }
+
+  .records {
+    margin-top: 20px;
+    text-align: left;
+  }
+
+  .records-title {
+    font-size: 13px;
+    color: #8b87a8;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .records-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .records-table th {
+    text-align: left;
+    padding: 8px 10px;
+    color: #8b87a8;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 2px solid #ece9f7;
+  }
+
+  .records-table td {
+    padding: 10px;
+    color: #2d2a4a;
+    font-weight: 600;
+    border-bottom: 1px solid #f0eef8;
+  }
+
+  .records-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .records-table td.time-cell {
+    font-variant-numeric: tabular-nums;
+    color: #667eea;
+    font-weight: 800;
+  }
+
+  .records-table td.rank-cell {
+    color: #8b87a8;
+    font-weight: 800;
+    width: 30px;
+  }
+
+  .records-table td.name-cell {
+    font-weight: 800;
+    color: #764ba2;
+    font-size: 16px;
+    width: 50px;
+  }
+
+  @media (max-width: 520px) {
+    .card { padding: 18px 14px; }
+    button { padding: 12px 14px; font-size: 14px; }
+    .win-badge { font-size: 18px; padding: 12px 22px; }
+    .answer-label { font-size: 13px; }
+    .answer-input { font-size: 16px; padding: 10px 42px 10px 14px; }
+    .topbar-value { font-size: 16px; }
+    .task-panel .task-value { font-size: 22px; }
+    .results-grid { grid-template-columns: repeat(3, 1fr); }
+    .result-box .result-value { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div id="gameScreen">
+    <div class="topbar">
+      <div class="topbar-box">
+        <span class="topbar-icon">📝</span>
+        <span class="topbar-label">Вопрос</span>
+        <span class="topbar-value" id="progressText">1 / 3</span>
+      </div>
+      <div class="topbar-box">
+        <span class="topbar-icon">⏱</span>
+        <span class="topbar-label">Время</span>
+        <span class="topbar-value" id="timerText">00:00</span>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="task-panel">
+      <div class="task-label">Начерти прямоугольник с периметром</div>
+      <div class="task-value" id="targetPerimeter">— <small>см</small></div>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="canvas" width="560" height="480"></canvas>
+    </div>
+
+    <div class="answer-row disabled" id="answerRow">
+      <label class="answer-label" for="answerInput">Периметр:</label>
+      <div class="answer-input-wrap">
+        <input
+          type="text"
+          inputmode="decimal"
+          class="answer-input"
+          id="answerInput"
+          placeholder="?"
+          autocomplete="off"
+          disabled>
+        <span class="answer-unit">см</span>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn-check" id="checkBtn" disabled>Проверить ✓</button>
+      <button class="btn-next" id="nextBtn" style="display: none;">Далее →</button>
+      <button class="btn-reset" id="resetBtn">↺</button>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <div class="win-overlay" id="winOverlay">
+      <div class="win-badge" id="winBadge">🎉 Верно!</div>
+    </div>
+  </div>
+
+  <div class="results-screen" id="resultsScreen">
+    <div class="results-title" id="resultsTitle">Тест завершён! 🎉</div>
+    <div class="results-subtitle" id="resultsSubtitle">Отличная работа</div>
+
+    <div class="results-grid">
+      <div class="result-box">
+        <div class="result-icon">✅</div>
+        <div class="result-label">Верно</div>
+        <div class="result-value" id="resultCorrect">0/3</div>
+      </div>
+      <div class="result-box">
+        <div class="result-icon">⏱</div>
+        <div class="result-label">Время</div>
+        <div class="result-value" id="resultTime">00:00</div>
+      </div>
+      <div class="result-box">
+        <div class="result-icon">⭐</div>
+        <div class="result-label">Оценка</div>
+        <div class="result-value" id="resultGrade">—</div>
+      </div>
+    </div>
+
+    <div class="name-section">
+      <div class="name-title">✍ Впиши своё имя</div>
+      <input
+        type="text"
+        class="name-input"
+        id="nameInput"
+        maxlength="20"
+        autocomplete="off">
+    </div>
+
+    <button class="btn-restart" id="restartBtn">🔄 Пройти заново</button>
+
+    <div class="records" id="recordsBlock" style="display: none;">
+      <div class="records-title">Лучшие результаты</div>
+      <table class="records-table" id="recordsTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Буква</th>
+            <th>Верно</th>
+            <th>Время</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const card = document.getElementById('card');
+
+  const gameScreen = document.getElementById('gameScreen');
+  const resultsScreen = document.getElementById('resultsScreen');
+
+  const progressText = document.getElementById('progressText');
+  const timerText = document.getElementById('timerText');
+  const progressFill = document.getElementById('progressFill');
+  const targetEl = document.getElementById('targetPerimeter');
+
+  const answerInput = document.getElementById('answerInput');
+  const answerRow = document.getElementById('answerRow');
+  const messageEl = document.getElementById('message');
+  const checkBtn = document.getElementById('checkBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const winOverlay = document.getElementById('winOverlay');
+  const winBadge = document.getElementById('winBadge');
+
+  const resultCorrect = document.getElementById('resultCorrect');
+  const resultTime = document.getElementById('resultTime');
+  const resultGrade = document.getElementById('resultGrade');
+  const resultsTitle = document.getElementById('resultsTitle');
+  const resultsSubtitle = document.getElementById('resultsSubtitle');
+  const nameInput = document.getElementById('nameInput');
+  const restartBtn = document.getElementById('restartBtn');
+  const recordsBlock = document.getElementById('recordsBlock');
+  const recordsTable = document.getElementById('recordsTable');
+
+  // ===== Константы =====
+  const CELL = 20;
+  const CM = 2;
+  const COLS = 28;
+  const ROWS = 24;
+  const OFFSET_X = (canvas.width  - COLS * CELL) / 2;
+  const OFFSET_Y = (canvas.height - ROWS * CELL) / 2;
+
+  const TOTAL_QUESTIONS = 3;
+
+  // Пул заданий
+  const TASKS = [
+    { w: 4,   h: 3   },  // P = 14
+    { w: 5,   h: 2   },  // P = 14
+    { w: 3,   h: 3   },  // P = 12
+    { w: 6,   h: 3   },  // P = 18
+    { w: 5,   h: 4   },  // P = 18
+    { w: 4.5, h: 3.5 },  // P = 16
+    { w: 6.5, h: 3.5 },  // P = 20
+    { w: 7,   h: 3   },  // P = 20
+    { w: 6,   h: 4   },  // P = 20
+    { w: 5,   h: 5   },  // P = 20
+    { w: 8,   h: 2   },  // P = 20
+    { w: 7,   h: 4   },  // P = 22
+    { w: 5.5, h: 4.5 },  // P = 20
+    { w: 8,   h: 3   },  // P = 22
+    { w: 4,   h: 4   },  // P = 16
+    { w: 5,   h: 3   },  // P = 16
+    { w: 6,   h: 5   },  // P = 22
+    { w: 7,   h: 2   },  // P = 18
+    { w: 8,   h: 4   },  // P = 24
+    { w: 6,   h: 2   },  // P = 16
+  ];
+
+  // ===== Состояние теста =====
+  let currentQuestionIndex = 0;
+  let questions = [];
+  let currentTask = null;
+  let targetPerimeter = 0;
+  let correctAnswers = 0;
+  let questionStartTime = 0;
+  let totalTime = 0;
+  let timerInterval = null;
+  let sessionFinished = false;
+
+  // ===== Состояние рисования =====
+  let sides = [];
+  let drawing = null;
+  let locked = false;
+  let isDrawing = false;
+  let questionAnswered = false;
+
+  // ===== Утилиты =====
+  const toPx = (cx, cy) => ({
+    x: OFFSET_X + cx * CELL * CM,
+    y: OFFSET_Y + (ROWS / CM - cy) * CELL * CM
+  });
+
+  function pxToCm(px, py) {
+    const cxCells = (px - OFFSET_X) / CELL;
+    const cyCells = ROWS - (py - OFFSET_Y) / CELL;
+    const snappedX = Math.round(cxCells);
+    const snappedY = Math.round(cyCells);
+    const clampedX = Math.max(0, Math.min(COLS, snappedX));
+    const clampedY = Math.max(0, Math.min(ROWS, snappedY));
+    return {
+      cx: clampedX / CM,
+      cy: clampedY / CM,
+      cellX: clampedX,
+      cellY: clampedY
+    };
+  }
+
+  function currentPerimeter() {
+    let p = 0;
+    for (const s of sides) {
+      const dx = Math.abs(s.x2 - s.x1);
+      const dy = Math.abs(s.y2 - s.y1);
+      p += dx + dy;
+    }
+    return Math.round(p * 10) / 10;
+  }
+
+  function formatNum(n) {
+    return Number.isInteger(n) ? n : n.toFixed(1);
+  }
+
+  function formatLength(cm) {
+    const totalMm = Math.round(cm * 10);
+    const wholeCm = Math.floor(totalMm / 10);
+    const mm = totalMm % 10;
+    if (mm === 0) return `${wholeCm} см`;
+    if (wholeCm === 0) return `${mm} мм`;
+    return `${wholeCm} см ${mm} мм`;
+  }
+
+  function formatTime(ms) {
+    const totalSec = Math.floor(ms / 1000);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function pickQuestions() {
+    const shuffled = shuffle(TASKS);
+    const seen = new Set();
+    const picked = [];
+    for (const t of shuffled) {
+      const p = 2 * (t.w + t.h);
+      if (!seen.has(p)) {
+        seen.add(p);
+        picked.push(t);
+      }
+      if (picked.length >= TOTAL_QUESTIONS) break;
+    }
+    while (picked.length < TOTAL_QUESTIONS) {
+      const t = shuffled[picked.length % shuffled.length];
+      picked.push(t);
+    }
+    return picked;
+  }
+
+  // ===== Старт теста =====
+  function startTest() {
+    currentQuestionIndex = 0;
+    correctAnswers = 0;
+    totalTime = 0;
+    sessionFinished = false;
+    questions = pickQuestions();
+
+    gameScreen.style.display = 'block';
+    resultsScreen.classList.remove('show');
+    recordsBlock.style.display = 'none';
+    nameSaved = false;
+    window.__pendingResult = null;
+
+    loadQuestion();
+    startTimer();
+  }
+
+  // ===== Загрузка вопроса =====
+  function loadQuestion() {
+    currentTask = questions[currentQuestionIndex];
+    targetPerimeter = Math.round(2 * (currentTask.w + currentTask.h) * 10) / 10;
+
+    sides = [];
+    drawing = null;
+    locked = false;
+    isDrawing = false;
+    questionAnswered = false;
+
+    answerInput.value = '';
+    answerInput.disabled = true;
+    answerInput.classList.remove('correct', 'wrong');
+    answerRow.classList.add('disabled');
+    hideMessage();
+    checkBtn.disabled = true;
+    checkBtn.style.display = 'block';
+    nextBtn.style.display = 'none';
+    canvas.classList.remove('win');
+
+    targetEl.innerHTML = `${formatNum(targetPerimeter)} <small>см</small>`;
+    progressText.textContent = `${currentQuestionIndex + 1} / ${TOTAL_QUESTIONS}`;
+    progressFill.style.width = `${(currentQuestionIndex / TOTAL_QUESTIONS) * 100}%`;
+
+    questionStartTime = Date.now();
+    draw();
+  }
+
+  // ===== Таймер =====
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      const elapsed = totalTime + (Date.now() - questionStartTime);
+      timerText.textContent = formatTime(elapsed);
+
+      const questionTime = Date.now() - questionStartTime;
+      if (questionTime > 60000) {
+        timerText.classList.add('warning');
+      } else {
+        timerText.classList.remove('warning');
+      }
+    }, 200);
+  }
+
+  function stopTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  // ===== Отрисовка =====
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#d9e0f0';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= COLS; i++) {
+      const x = OFFSET_X + i * CELL + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(x, OFFSET_Y);
+      ctx.lineTo(x, OFFSET_Y + ROWS * CELL);
+      ctx.stroke();
+    }
+    for (let j = 0; j <= ROWS; j++) {
+      const y = OFFSET_Y + j * CELL + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(OFFSET_X, y);
+      ctx.lineTo(OFFSET_X + COLS * CELL, y);
+      ctx.stroke();
+    }
+
+    sides.forEach(s => {
+      const p1 = toPx(s.x1, s.y1);
+      const p2 = toPx(s.x2, s.y2);
+      ctx.strokeStyle = locked ? '#22c55e' : '#667eea';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+
+      [p1, p2].forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = locked ? '#22c55e' : '#667eea';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+    });
+
+    if (sides.length === 4 && isClosed() && isRectangle()) {
+      const pts = getOrderedVertices().map(v => toPx(v.x, v.y));
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      ctx.closePath();
+      const grad = ctx.createLinearGradient(OFFSET_X, OFFSET_Y, OFFSET_X + COLS*CELL, OFFSET_Y + ROWS*CELL);
+      if (locked) {
+        grad.addColorStop(0, 'rgba(34, 197, 94, 0.15)');
+        grad.addColorStop(1, 'rgba(22, 163, 74, 0.18)');
+      } else {
+        grad.addColorStop(0, 'rgba(102, 126, 234, 0.15)');
+        grad.addColorStop(1, 'rgba(118, 75, 162, 0.18)');
+      }
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    if (drawing) {
+      const p1 = toPx(drawing.x1, drawing.y1);
+      const p2 = toPx(drawing.x2, drawing.y2);
+      ctx.strokeStyle = '#ff8c32';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.beginPath();
+      ctx.arc(p2.x, p2.y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff8c32';
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+
+    if (sides.length > 0 && sides.length < 4 && !drawing && !locked) {
+      const ends = getFreeEndpoints();
+      const pulse = 1 + 0.2 * Math.sin(Date.now() / 300);
+      ends.forEach(pt => {
+        const p = toPx(pt.x, pt.y);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 11 * pulse, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 140, 50, 0.3)';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff8c32';
+        ctx.fill();
+      });
+    }
+
+    const showLabels = sides.length === 4 && isClosed() && isRectangle();
+    if (showLabels) {
+      ctx.font = '700 14px "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      sides.forEach(s => {
+        const dx = s.x2 - s.x1;
+        const dy = s.y2 - s.y1;
+        const len = Math.round((Math.abs(dx) + Math.abs(dy)) * 10) / 10;
+        const mid = toPx((s.x1 + s.x2) / 2, (s.y1 + s.y2) / 2);
+        let offsetX = 0, offsetY = 0;
+        if (Math.abs(dx) > Math.abs(dy)) offsetY = -18;
+        else offsetX = 22;
+
+        const text = formatLength(len);
+        const metrics = ctx.measureText(text);
+        const w = metrics.width + 16;
+        const h = 26;
+
+        ctx.fillStyle = locked ? 'rgba(220, 252, 231, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        ctx.strokeStyle = locked ? '#86efac' : '#c7d2fe';
+        ctx.lineWidth = 1.5;
+        roundRect(mid.x + offsetX - w/2, mid.y + offsetY - h/2, w, h, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = locked ? '#15803d' : '#4338ca';
+        ctx.fillText(text, mid.x + offsetX, mid.y + offsetY);
+      });
+    }
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  // ===== Логика связности =====
+  function getFreeEndpoints() {
+    if (sides.length === 0) return [];
+    if (sides.length === 1) {
+      const s = sides[0];
+      return [{x: s.x1, y: s.y1}, {x: s.x2, y: s.y2}];
+    }
+    const pts = [];
+    sides.forEach(s => {
+      pts.push({x: s.x1, y: s.y1});
+      pts.push({x: s.x2, y: s.y2});
+    });
+    const result = [];
+    for (let i = 0; i < pts.length; i++) {
+      let count = 0;
+      for (let j = 0; j < pts.length; j++) {
+        if (i !== j && Math.abs(pts[i].x - pts[j].x) < 0.01 && Math.abs(pts[i].y - pts[j].y) < 0.01) {
+          count++;
+        }
+      }
+      if (count === 0) {
+        const exists = result.some(p => Math.abs(p.x - pts[i].x) < 0.01 && Math.abs(p.y - pts[i].y) < 0.01);
+        if (!exists) result.push(pts[i]);
+      }
+    }
+    return result;
+  }
+
+  function isClosed() {
+    if (sides.length !== 4) return false;
+    const pts = [];
+    sides.forEach(s => {
+      pts.push({x: s.x1, y: s.y1});
+      pts.push({x: s.x2, y: s.y2});
+    });
+    for (let i = 0; i < pts.length; i++) {
+      let count = 0;
+      for (let j = 0; j < pts.length; j++) {
+        if (Math.abs(pts[i].x - pts[j].x) < 0.01 && Math.abs(pts[i].y - pts[j].y) < 0.01) count++;
+      }
+      if (count !== 2) return false;
+    }
+    return true;
+  }
+
+  function getOrderedVertices() {
+    if (sides.length === 0) return [];
+    const verts = [];
+    const used = new Set();
+    let current = {x: sides[0].x1, y: sides[0].y1};
+    verts.push(current);
+    for (let step = 0; step < 4; step++) {
+      for (let i = 0; i < sides.length; i++) {
+        if (used.has(i)) continue;
+        const s = sides[i];
+        const p1 = {x: s.x1, y: s.y1};
+        const p2 = {x: s.x2, y: s.y2};
+        if (Math.abs(p1.x - current.x) < 0.01 && Math.abs(p1.y - current.y) < 0.01) {
+          used.add(i);
+          current = p2;
+          verts.push(current);
+          break;
+        } else if (Math.abs(p2.x - current.x) < 0.01 && Math.abs(p2.y - current.y) < 0.01) {
+          used.add(i);
+          current = p1;
+          verts.push(current);
+          break;
+        }
+      }
+    }
+    verts.pop();
+    return verts;
+  }
+
+  function isRectangle() {
+    if (!isClosed()) return false;
+    const v = getOrderedVertices();
+    if (v.length !== 4) return false;
+    for (let i = 0; i < 4; i++) {
+      const a = v[i];
+      const b = v[(i + 1) % 4];
+      const c = v[(i + 2) % 4];
+      const abx = b.x - a.x, aby = b.y - a.y;
+      const bcx = c.x - b.x, bcy = c.y - b.y;
+      if (Math.abs(abx * bcx + aby * bcy) > 0.01) return false;
+      if (Math.abs(abx) > 0.01 && Math.abs(aby) > 0.01) return false;
+    }
+    return true;
+  }
+
+  // ===== Сообщения =====
+  function showMessage(text, type) {
+    messageEl.textContent = text;
+    messageEl.className = 'message show ' + type;
+  }
+
+  function hideMessage() {
+    messageEl.className = 'message';
+  }
+
+  function maybeEnableAnswer() {
+    if (sides.length === 4 && isClosed() && isRectangle() && !locked) {
+      answerInput.disabled = false;
+      answerRow.classList.remove('disabled');
+      checkBtn.disabled = false;
+      setTimeout(() => answerInput.focus(), 100);
+    } else {
+      answerInput.disabled = true;
+      answerRow.classList.add('disabled');
+      checkBtn.disabled = true;
+    }
+  }
+
+  // ===== Рисование =====
+  function getPointFromEvent(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const px = (clientX - rect.left) * scaleX;
+    const py = (clientY - rect.top)  * scaleY;
+    return pxToCm(px, py);
+  }
+
+  function findNearbyEndpoint(cm, tolerance = 0.6) {
+    const ends = getFreeEndpoints();
+    for (const e of ends) {
+      if (Math.abs(e.x - cm.cx) < tolerance && Math.abs(e.y - cm.cy) < tolerance) {
+        return e;
+      }
+    }
+    return null;
+  }
+
+  function startDraw(e) {
+    if (locked || questionAnswered) return;
+    if (sides.length >= 4) return;
+    const cm = getPointFromEvent(e);
+
+    let startPoint;
+    if (sides.length === 0) {
+      startPoint = { x: cm.cx, y: cm.cy };
+    } else {
+      const near = findNearbyEndpoint(cm);
+      if (!near) {
+        showMessage('⚠ Начни рисовать от оранжевой точки', 'error');
+        return;
+      }
+      startPoint = near;
+    }
+
+    isDrawing = true;
+    drawing = {
+      x1: startPoint.x, y1: startPoint.y,
+      x2: startPoint.x, y2: startPoint.y
+    };
+    e.preventDefault();
+  }
+
+  function moveDraw(e) {
+    if (!isDrawing || !drawing) return;
+    e.preventDefault();
+    const cm = getPointFromEvent(e);
+    const dx = cm.cx - drawing.x1;
+    const dy = cm.cy - drawing.y1;
+
+    let end;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      end = { x: drawing.x1 + dx, y: drawing.y1 };
+    } else {
+      end = { x: drawing.x1, y: drawing.y1 + dy };
+    }
+    drawing.x2 = end.x;
+    drawing.y2 = end.y;
+  }
+
+  function endDraw() {
+    if (!isDrawing || !drawing) return;
+    isDrawing = false;
+
+    const len = Math.abs(drawing.x2 - drawing.x1) + Math.abs(drawing.y2 - drawing.y1);
+    if (len < 0.5) { drawing = null; return; }
+
+    const newSide = {
+      x1: drawing.x1, y1: drawing.y1,
+      x2: drawing.x2, y2: drawing.y2
+    };
+
+    const isHorizontal = Math.abs(newSide.y2 - newSide.y1) < 0.01;
+    const isVertical = Math.abs(newSide.x2 - newSide.x1) < 0.01;
+    if (!isHorizontal && !isVertical) {
+      drawing = null;
+      showMessage('⚠ Стороны должны быть горизонтальными или вертикальными', 'error');
+      return;
+    }
+
+    if (sides.length === 3) {
+      const first = sides[0];
+      const startPt = { x: first.x1, y: first.y1 };
+      const endPt = { x: first.x2, y: first.y2 };
+      const matchStart = Math.abs(newSide.x2 - startPt.x) < 0.01 && Math.abs(newSide.y2 - startPt.y) < 0.01;
+      const matchEnd = Math.abs(newSide.x2 - endPt.x) < 0.01 && Math.abs(newSide.y2 - endPt.y) < 0.01;
+      if (!matchStart && !matchEnd) {
+        drawing = null;
+        showMessage('⚠ Последняя сторона должна замкнуть фигуру', 'error');
+        return;
+      }
+    } else {
+      const allPts = [];
+      sides.forEach(s => {
+        allPts.push({x: s.x1, y: s.y1});
+        allPts.push({x: s.x2, y: s.y2});
+      });
+      for (const p of allPts) {
+        if (Math.abs(newSide.x2 - p.x) < 0.01 && Math.abs(newSide.y2 - p.y) < 0.01) {
+          drawing = null;
+          showMessage('⚠ Конец не должен совпадать с уже существующей точкой', 'error');
+          return;
+        }
+      }
+    }
+
+    for (const s of sides) {
+      if (segmentsIntersect(newSide, s)) {
+        drawing = null;
+        showMessage('⚠ Стороны не должны пересекаться', 'error');
+        return;
+      }
+    }
+
+    sides.push(newSide);
+    drawing = null;
+    hideMessage();
+
+    if (sides.length === 4) {
+      if (isClosed() && isRectangle()) {
+        maybeEnableAnswer();
+      } else {
+        showMessage('❌ Фигура не является прямоугольником', 'error');
+      }
+    }
+  }
+
+  function segmentsIntersect(a, b) {
+    const aHoriz = Math.abs(a.y1 - a.y2) < 0.01;
+    const bHoriz = Math.abs(b.y1 - b.y2) < 0.01;
+
+    const sharedPoints = [
+      {ax: a.x1, ay: a.y1, bx: b.x1, by: b.y1},
+      {ax: a.x1, ay: a.y1, bx: b.x2, by: b.y2},
+      {ax: a.x2, ay: a.y2, bx: b.x1, by: b.y1},
+      {ax: a.x2, ay: a.y2, bx: b.x2, by: b.y2},
+    ];
+    const hasShared = sharedPoints.some(p =>
+      Math.abs(p.ax - p.bx) < 0.01 && Math.abs(p.ay - p.by) < 0.01
+    );
+    if (hasShared) return false;
+
+    if (aHoriz && !bHoriz) {
+      return pointOnSegment(b.x1, b.y1, a) && pointOnSegment(a.x1, a.y1, b);
+    }
+    if (!aHoriz && bHoriz) {
+      return pointOnSegment(a.x1, a.y1, b) && pointOnSegment(b.x1, b.y1, a);
+    }
+    return false;
+  }
+
+  function pointOnSegment(px, py, seg) {
+    const minX = Math.min(seg.x1, seg.x2) + 0.01;
+    const maxX = Math.max(seg.x1, seg.x2) - 0.01;
+    const minY = Math.min(seg.y1, seg.y2) + 0.01;
+    const maxY = Math.max(seg.y1, seg.y2) - 0.01;
+    return px > minX && px < maxX && py > minY && py < maxY;
+  }
+
+  canvas.addEventListener('mousedown', startDraw);
+  window.addEventListener('mousemove', moveDraw);
+  window.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('touchstart', startDraw, { passive: false });
+  window.addEventListener('touchmove', moveDraw, { passive: false });
+  window.addEventListener('touchend', endDraw);
+
+  // ===== Победная анимация =====
+  function celebrate() {
+    canvas.classList.add('win');
+    winBadge.textContent = '🎉 Верно!';
+    winOverlay.classList.remove('show');
+    void winOverlay.offsetWidth;
+    winOverlay.classList.add('show');
+
+    const colors = ['#667eea', '#764ba2', '#ff8c32', '#22c55e', '#f59e0b', '#ec4899', '#06b6d4'];
+    const rect = canvas.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    for (let i = 0; i < 40; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = (rect.left - cardRect.left + Math.random() * rect.width) + 'px';
+      c.style.top  = (rect.top  - cardRect.top - 20) + 'px';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.width = (6 + Math.random() * 8) + 'px';
+      c.style.height = (10 + Math.random() * 8) + 'px';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      c.style.animationDelay = (Math.random() * 0.4) + 's';
+      c.style.animationDuration = (1.4 + Math.random() * 0.9) + 's';
+      card.appendChild(c);
+      setTimeout(() => c.remove(), 2600);
+    }
+
+    setTimeout(() => canvas.classList.remove('win'), 1800);
+  }
+
+  // ===== Проверка ответа =====
+  checkBtn.addEventListener('click', () => {
+    if (locked || questionAnswered) return;
+
+    if (sides.length !== 4 || !isClosed() || !isRectangle()) {
+      showMessage('❌ Сначала начерти прямоугольник', 'error');
+      return;
+    }
+
+    const builtPerimeter = currentPerimeter();
+    const diff = Math.round((builtPerimeter - targetPerimeter) * 10) / 10;
+
+    if (Math.abs(diff) > 0.01) {
+      if (diff > 0) {
+        showMessage(`❌ Периметр построенного прямоугольника больше нужного на ${formatLength(diff)}. Попробуй другой размер.`, 'error');
+      } else {
+        showMessage(`❌ Периметр построенного прямоугольника меньше нужного на ${formatLength(-diff)}. Попробуй другой размер.`, 'error');
+      }
+      setTimeout(() => {
+        sides = [];
+        drawing = null;
+        answerInput.value = '';
+        answerInput.disabled = true;
+        answerRow.classList.add('disabled');
+        checkBtn.disabled = true;
+      }, 1200);
+      return;
+    }
+
+    const raw = answerInput.value.trim().replace(',', '.');
+    const userAnswer = parseFloat(raw);
+
+    if (isNaN(userAnswer) || raw === '') {
+      showMessage('⚠ Впиши периметр в поле', 'error');
+      answerInput.classList.add('wrong');
+      setTimeout(() => answerInput.classList.remove('wrong'), 500);
+      return;
+    }
+
+    if (Math.abs(userAnswer - builtPerimeter) < 0.01) {
+      questionAnswered = true;
+      locked = true;
+      correctAnswers++;
+      answerInput.classList.add('correct');
+      answerInput.disabled = true;
+      hideMessage();
+      celebrate();
+      checkBtn.disabled = true;
+      checkBtn.style.display = 'none';
+      nextBtn.style.display = 'block';
+    } else {
+      const answerDiff = Math.round((userAnswer - builtPerimeter) * 10) / 10;
+      if (answerDiff > 0) {
+        showMessage(`❌ Твой ответ больше правильного на ${formatLength(answerDiff)}. Пересчитай.`, 'error');
+      } else {
+        showMessage(`❌ Твой ответ меньше правильного на ${formatLength(-answerDiff)}. Пересчитай.`, 'error');
+      }
+      answerInput.classList.add('wrong');
+      setTimeout(() => answerInput.classList.remove('wrong'), 500);
+    }
+  });
+
+  answerInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      checkBtn.click();
+    }
+  });
+
+  // ===== Следующий вопрос =====
+  nextBtn.addEventListener('click', () => {
+    totalTime += Date.now() - questionStartTime;
+
+    if (currentQuestionIndex + 1 >= TOTAL_QUESTIONS) {
+      finishTest();
+    } else {
+      currentQuestionIndex++;
+      loadQuestion();
+    }
+  });
+
+  // ===== Сброс текущего чертежа =====
+  resetBtn.addEventListener('click', () => {
+    if (questionAnswered) return;
+    sides = [];
+    drawing = null;
+    hideMessage();
+    answerInput.value = '';
+    answerInput.disabled = true;
+    answerInput.classList.remove('correct', 'wrong');
+    answerRow.classList.add('disabled');
+    checkBtn.disabled = true;
+    draw();
+  });
+
+  // ===== Завершение теста =====
+  function finishTest() {
+    stopTimer();
+    sessionFinished = true;
+
+    const totalTimeMs = totalTime;
+
+    resultCorrect.textContent = `${correctAnswers} / ${TOTAL_QUESTIONS}`;
+    resultTime.textContent = formatTime(totalTimeMs);
+
+    let grade = '—';
+    let subtitle = '';
+    if (correctAnswers === 3) {
+      grade = '5';
+      subtitle = 'Превосходно! Ты мастер периметра! 🏆';
+      resultsTitle.textContent = 'Идеальный результат! 🌟';
+    } else if (correctAnswers === 2) {
+      grade = '4';
+      subtitle = 'Очень хорошо! Почти без ошибок.';
+      resultsTitle.textContent = 'Отличная работа! 🎉';
+    } else if (correctAnswers === 1) {
+      grade = '3';
+      subtitle = 'Неплохо, но есть куда расти.';
+      resultsTitle.textContent = 'Тест завершён';
+    } else {
+      grade = '2';
+      subtitle = 'Не расстраивайся, попробуй ещё раз!';
+      resultsTitle.textContent = 'Тест завершён';
+    }
+    resultGrade.textContent = grade;
+    resultsSubtitle.textContent = subtitle;
+
+    gameScreen.style.display = 'none';
+    resultsScreen.classList.add('show');
+    nameInput.value = '';
+    nameInput.focus();
+
+    window.__pendingResult = {
+      correct: correctAnswers,
+      total: TOTAL_QUESTIONS,
+      timeMs: totalTimeMs
+    };
+
+    updateRecords();
+  }
+
+  // ===== Рекорды =====
+  const STORAGE_KEY = 'perimeter_test_records';
+  let nameSaved = false;
+
+  function getRecords() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveRecords(records) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    } catch (e) {}
+  }
+
+  function updateRecords() {
+    const records = getRecords();
+    if (records.length === 0) {
+      recordsBlock.style.display = 'none';
+      return;
+    }
+    records.sort((a, b) => {
+      if (b.correct !== a.correct) return b.correct - a.correct;
+      return a.timeMs - b.timeMs;
+    });
+    const top = records.slice(0, 5);
+
+    const tbody = recordsTable.querySelector('tbody');
+    tbody.innerHTML = '';
+    top.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="rank-cell">${i + 1}</td>
+        <td class="name-cell">${escapeHtml(r.name)}</td>
+        <td>${r.correct}/${r.total}</td>
+        <td class="time-cell">${formatTime(r.timeMs)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+    recordsBlock.style.display = 'block';
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  // Ввод имени — сохраняем только первую букву
+  nameInput.addEventListener('input', () => {
+    if (nameSaved) return;
+    const name = nameInput.value.trim();
+    if (name.length > 0 && window.__pendingResult) {
+      nameSaved = true;
+      const firstLetter = name.charAt(0).toUpperCase();
+      const records = getRecords();
+      records.push({
+        name: firstLetter,
+        correct: window.__pendingResult.correct,
+        total: window.__pendingResult.total,
+        timeMs: window.__pendingResult.timeMs,
+        date: Date.now()
+      });
+      saveRecords(records);
+      updateRecords();
+    }
+  });
+
+  nameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      nameInput.blur();
+    }
+  });
+
+  // ===== Кнопка "Пройти заново" =====
+  restartBtn.addEventListener('click', () => {
+    startTest();
+  });
+
+  // ===== Анимационный цикл =====
+  function loop() {
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // ===== Старт =====
+  startTest();
+  loop();
+})();
+</script>
+</body>
+</html>
